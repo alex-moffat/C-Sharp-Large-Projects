@@ -1,0 +1,7 @@
+C:\Users\Alexander\Desktop\GIT_local\C-Sharp-Small-Projects\Blackjack\bin\Debug\Blackjack.exe.config
+C:\Users\Alexander\Desktop\GIT_local\C-Sharp-Small-Projects\Blackjack\bin\Debug\Blackjack.exe
+C:\Users\Alexander\Desktop\GIT_local\C-Sharp-Small-Projects\Blackjack\bin\Debug\Blackjack.pdb
+C:\Users\Alexander\Desktop\GIT_local\C-Sharp-Small-Projects\Blackjack\obj\Debug\Blackjack.csprojAssemblyReference.cache
+C:\Users\Alexander\Desktop\GIT_local\C-Sharp-Small-Projects\Blackjack\obj\Debug\Blackjack.csproj.CoreCompileInputs.cache
+C:\Users\Alexander\Desktop\GIT_local\C-Sharp-Small-Projects\Blackjack\obj\Debug\Blackjack.exe
+C:\Users\Alexander\Desktop\GIT_local\C-Sharp-Small-Projects\Blackjack\obj\Debug\Blackjack.pdb
