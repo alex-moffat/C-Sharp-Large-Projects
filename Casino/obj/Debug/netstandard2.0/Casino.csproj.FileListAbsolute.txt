@@ -1,0 +1,8 @@
+C:\Users\Alexander\Desktop\GIT_local\C-Sharp-Large-Projects\Casino\bin\Debug\netstandard2.0\Casino.deps.json
+C:\Users\Alexander\Desktop\GIT_local\C-Sharp-Large-Projects\Casino\bin\Debug\netstandard2.0\Casino.dll
+C:\Users\Alexander\Desktop\GIT_local\C-Sharp-Large-Projects\Casino\bin\Debug\netstandard2.0\Casino.pdb
+C:\Users\Alexander\Desktop\GIT_local\C-Sharp-Large-Projects\Casino\obj\Debug\netstandard2.0\Casino.AssemblyInfoInputs.cache
+C:\Users\Alexander\Desktop\GIT_local\C-Sharp-Large-Projects\Casino\obj\Debug\netstandard2.0\Casino.AssemblyInfo.cs
+C:\Users\Alexander\Desktop\GIT_local\C-Sharp-Large-Projects\Casino\obj\Debug\netstandard2.0\Casino.csproj.CoreCompileInputs.cache
+C:\Users\Alexander\Desktop\GIT_local\C-Sharp-Large-Projects\Casino\obj\Debug\netstandard2.0\Casino.dll
+C:\Users\Alexander\Desktop\GIT_local\C-Sharp-Large-Projects\Casino\obj\Debug\netstandard2.0\Casino.pdb

@@ -4,6 +4,9 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using Casino;
+using Casino.Blackjack;
 
 namespace Blackjack
 {
@@ -11,40 +14,66 @@ namespace Blackjack
     {
         static void Main(string[] args)
         {
-            //========== GAME
+            //========== CASINO NAME
+            const string casinoName = "Grand Hotel and Casino";
+
+            //========== LOG FILE
+            string logDir = Directory.GetCurrentDirectory() + @"\logs";
+            string logFile = logDir + @"\log.txt";
+            if (!Directory.Exists(logDir)) Directory.CreateDirectory(logDir);
+            string logTxt = string.Format("========== BLACKJACK LOG ==========\n{0}\n", DateTime.Now);
+            File.WriteAllText(logFile, logTxt);
+
+            //========== GAME SETUP
             Console.BackgroundColor = ConsoleColor.DarkGreen;
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Clear();
-            Console.WriteLine("\n===================================================\n=====( Welcome to the Grand Hotel and Casino )=====\n===================================================\n");
+            Console.WriteLine("\n===================================================\n=====( Welcome to the {0} )=====\n===================================================\n", casinoName);
             Game game = new BlackjackGame();
 
             //========== ADD PLAYERS
+            const int maxPlayers = 7;
             bool addPlayers = true;
-            int maxPlayers = 7;
+            string playerName;            
+
             while (addPlayers && game.Players.Count < maxPlayers)
             {
                 Console.WriteLine("\nPlayer, what is your name?");
-                string playerName = Console.ReadLine();
-                Console.WriteLine("How much money did you bring today?");
-                int bank = Convert.ToInt32(Console.ReadLine());
-                Console.WriteLine("Hello {0}. Would you like to join a game of Blackjack right now?", playerName);
-                if (Console.ReadLine().ToLower().Contains("y"))
+                playerName = Console.ReadLine();
+                playerName = playerName[0].ToString().ToUpper() + playerName.Substring(1);
+                Player player = new Player(playerName); // asks for player bank if not provided
+                if (player.Balance > 0)
                 {
-                    Player player = new Player(playerName, bank);
-                    game += player;
-                    Console.WriteLine("-->{0} added to game.", playerName);                    
+                    Console.WriteLine("Hello {0}. Would you like to join a game of Blackjack right now?", playerName);
+                    if (Console.ReadLine().ToLower().Contains("y"))
+                    {
+                        game += player;
+                        Console.WriteLine("-->{0} added to game.", playerName);
+                    }                    
                 }
                 if (game.Players.Count < maxPlayers)
                 {
                     Console.WriteLine("\nIs someone else joining today?");
                     if (Console.ReadLine().ToLower().Contains("n")) addPlayers = false;
-                }                
+                }
             }
             
             //========== PLAY - continue to play rounds until NO players are actively playing or have a balance > 0
             while (game.Players.Count > 0)
             {
-                game.Play();
+                //----- Play game
+                try
+                {
+                    game.Play();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("ERROR. Please contact your system administrator.");
+                    Console.WriteLine("ERROR: " + e.Message);
+                    Console.ReadLine();
+                    return;
+                }
+                //----- Player removal
                 List<Player> removals = new List<Player>();
                 removals = game.Players.Where(x => !x.ActivelyPlaying || x.Balance == 0).ToList();
                 foreach (Player player in removals)
@@ -57,12 +86,19 @@ namespace Blackjack
             Console.WriteLine("\n===Thank you for playing.");
             Console.WriteLine("Feel free to look aroung the casino. Bye for now.");
 
-            
+
             //========== TESTS ==========
+
+            //string str1 = "Here is some text.\nMore on a new line.\tHere is some after a tab.";
+            //File.WriteAllText(logFile, str1);
+
+            //string txt = File.ReadAllText(logFile);
+            //Console.WriteLine(txt);
+
 
             //===== CREATE DECK
             //Deck deck = new Deck();
-            
+
             //===== SHUFFLE DECK
             //deck.Shuffle(times: 4, true);
 
