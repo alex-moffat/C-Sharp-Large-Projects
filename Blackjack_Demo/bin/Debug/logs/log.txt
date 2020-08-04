@@ -1,3 +1,2 @@
 ========== BLACKJACK LOG ==========
-8/1/2020 3:15:36 PM
-8/1/2020 3:15:43 PM Player Alex joined the game. ID = 45afc8e3-40e6-407a-8c2f-651cf8fb8e31
+8/3/2020 5:08:12 PM

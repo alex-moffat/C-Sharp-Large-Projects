@@ -52,6 +52,6 @@ namespace Casino
                 file.WriteLine("{0} Player {1} left the game. ID = {2}", DateTime.Now, player.Name, player.Id);
             }
             return game;
-        }
+        }        
     }
 }

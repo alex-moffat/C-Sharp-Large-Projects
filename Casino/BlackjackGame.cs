@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.SqlTypes;
 
 namespace Casino.Blackjack
 {
@@ -62,9 +62,11 @@ namespace Casino.Blackjack
                     }
                     catch (FraudException)
                     {
-                        Console.WriteLine("SECURITY! Throw this person out.");
-                        Console.ReadLine();
-                        return;
+                        p.ActivelyPlaying = false;
+                        throw new FraudException(string.Format("Security! {0} has tried to commit fraud",p.Name));
+                        // Console.WriteLine("SECURITY! Throw this person out.");
+                        // Console.ReadLine();
+                        // return;
                     }
                     catch (Exception e)
                     {
@@ -209,7 +211,7 @@ namespace Casino.Blackjack
         public void WalkAway(Player player)
         {
             throw new NotImplementedException();
-        }
-
+        }   
+        
     }
 }

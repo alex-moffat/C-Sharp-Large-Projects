@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.IO;
 using Casino;
 using Casino.Blackjack;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace Blackjack
 {
@@ -41,6 +43,21 @@ namespace Blackjack
                 Console.WriteLine("\nPlayer, what is your name?");
                 playerName = Console.ReadLine();
                 playerName = playerName[0].ToString().ToUpper() + playerName.Substring(1);
+                //===== ADMIN ENTRY
+                if (playerName == "Admin")
+                {
+                    List<ExceptionEntity> exceptions = ReadExceptions();
+                    foreach (var e in exceptions)
+                    {
+                        Console.Write(e.Id + " | ");
+                        Console.Write(string.Format("{0} | ", e.ExceptionType));
+                        Console.Write(string.Format("{0} | ", e.ExceptionMessage));
+                        Console.WriteLine(string.Format("{0} \n", e.TimeStamp));                        
+                    }
+                    Console.Read();
+                    return;
+                }
+                //===== PLAYER ENTRY
                 Player player = new Player(playerName); // asks for player bank if not provided
                 if (player.Balance > 0)
                 {
@@ -66,8 +83,16 @@ namespace Blackjack
                 {
                     game.Play();
                 }
+                catch (FraudException e)
+                {
+                    UpdateDbException(e);
+                    Console.WriteLine("SECURITY! Throw this person out.");
+                    Console.ReadLine();
+                    return;
+                }
                 catch (Exception e)
                 {
+                    UpdateDbException(e);
                     Console.WriteLine("ERROR. Please contact your system administrator.");
                     Console.WriteLine("ERROR: " + e.Message);
                     Console.ReadLine();
@@ -142,6 +167,47 @@ namespace Blackjack
             //===== HOLD OPEN - till enter is pressed
             Console.ReadLine();
         }
-        
+
+        private static void UpdateDbException(Exception e)
+        {
+            string connectionStr = @"Data Source = (localdb)\MSSQLLocalDB; Initial Catalog = BalckjackGame; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False";
+            string queryStr = @"INSERT INTO Exceptions (ExceptionType, ExceptionMessage, TimeStamp) VALUES
+                                (@ExceptionType, @ExceptionMessage, @TimeStamp)";
+            using (SqlConnection connection = new SqlConnection(connectionStr))
+            {
+                SqlCommand command = new SqlCommand(queryStr, connection);
+                command.Parameters.Add("@ExceptionType", SqlDbType.VarChar);
+                command.Parameters.Add("@ExceptionMessage", SqlDbType.VarChar);
+                command.Parameters.Add("@TimeStamp", SqlDbType.DateTime);
+                command.Parameters["@ExceptionType"].Value = e.GetType().ToString();
+                command.Parameters["@ExceptionMessage"].Value = e.Message;
+                command.Parameters["@TimeStamp"].Value = DateTime.Now;
+
+                connection.Open();
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
+        }
+        private static List<ExceptionEntity> ReadExceptions()
+        {
+            string connectionStr = @"Data Source = (localdb)\MSSQLLocalDB; Initial Catalog = BalckjackGame; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False";
+            string queryStr = @"SELECT Id, ExceptionType, ExceptionMessage, TimeStamp FROM Exceptions";
+            List<ExceptionEntity> exceptions = new List<ExceptionEntity>();
+            
+            using (SqlConnection connection = new SqlConnection(connectionStr))
+            {
+                SqlCommand command = new SqlCommand(queryStr, connection);
+                
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    ExceptionEntity e = new ExceptionEntity(Convert.ToInt32(reader["Id"]), reader["ExceptionType"].ToString().Trim(), reader["ExceptionMessage"].ToString().Trim(), Convert.ToDateTime(reader["TimeStamp"]));
+                    exceptions.Add(e);
+                }
+                connection.Close();
+            }
+            return exceptions;
+        }
     }
 }

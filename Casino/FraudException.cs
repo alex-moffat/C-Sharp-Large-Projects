@@ -6,7 +6,7 @@ namespace Casino
 {
     public class FraudException : Exception
     {
-        public FraudException() : base()
+        public FraudException() : base("Security! Kick this person out.")
         { }
         public FraudException(string message) : base(message)
         { }

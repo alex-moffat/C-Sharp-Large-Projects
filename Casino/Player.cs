@@ -43,9 +43,9 @@ namespace Casino
             }
             else if (amount < 0)
             {
-                // throw new FraudException();
-                Console.WriteLine("You must place a bet greater than zero.");
-                return false;
+                throw new FraudException(); // used as example
+                // Console.WriteLine("You must place a bet greater than zero.");
+                // return false;
             }
             else
             {
