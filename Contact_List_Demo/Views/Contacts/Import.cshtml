@@ -1,0 +1,17 @@
+﻿
+@{
+    ViewBag.Title = "Import";
+}
+
+<h2>@ViewBag.Title</h2>
+<h3>Select an Excel File to Import</h3>
+<br />
+
+@using (Html.BeginForm("Import", "Contacts", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <input type="file" name="postedFile" class="form-control-file"/>
+    <br />
+    <input type="submit" value="Import" class="btn btn-success"/>
+}
+
+<h3><span class="badge bg-warning">@ViewBag.InvalidImport</span></h3>
