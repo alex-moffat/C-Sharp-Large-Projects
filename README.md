@@ -9,6 +9,9 @@ This project is built using ASP .Net MVC and Entity Framework. This project is t
 ## CONTENT
 - [Story 1: Align Checkboxes](#story-1-align-checkboxes)
 - [Story 2: Replace static images on home page with carousels](#story-2-replace-static-images-on-home-page-with-carousels)
+- [Story 3: Emulate part details card with part create form](#story-3-emulate-part-details-card-with-part-create-form)
+- [Story 4: Enable photo update during Production creation](#story-4-enable-photo-update-during-production-creation)
+- [Story 5: Add custom validation and fix display bug](#story-5-add-custom-validation+fix-display-bug)
 
 ## STORIES
 ### Story 1: Align Checkboxes
@@ -17,6 +20,37 @@ This project is built using ASP .Net MVC and Entity Framework. This project is t
 -	Center checkboxes and labels in columns
 -	Remove focus highlight from checkbox container border
 -	Center labels for CastYearLeft and DebutYear
+```
+<!--===== CHECKBOXES - match column width for group container =====-->
+<div class="container col-md-10 text-center">
+    <div class="row justify-content-center">
+        <!--=== AssociateArtist ===-->
+        <div class="form-group">
+            @Html.LabelFor(model => model.AssociateArtist, htmlAttributes: new { @class = "control-label inputLabel" })
+            <div class="focus-negate">
+                @Html.EditorFor(model => model.AssociateArtist, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.AssociateArtist, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <!--=== EnsembleMember ===-->
+        <div class="mx-4 form-group">
+            @Html.LabelFor(model => model.EnsembleMember, htmlAttributes: new { @class = "control-label inputLabel" })
+            <div class="focus-negate">
+                @Html.EditorFor(model => model.EnsembleMember, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.EnsembleMember, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <!--=== CurrentMember ===-->
+        <div class="form-group">
+            @Html.LabelFor(model => model.CurrentMember, htmlAttributes: new { @class = "control-label inputLabel" })
+            <div class="focus-negate">
+                @Html.EditorFor(model => model.CurrentMember, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.CurrentMember, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+</div>
+```
 
 ### Story 2: Replace static images on home page with carousels 
 -	Create carousel for each production that automatically rotates through all available Production Photos.
@@ -57,7 +91,7 @@ This project is built using ASP .Net MVC and Entity Framework. This project is t
 -	Allow Create production without photo if no upload file is given
 -	Use selected Season after failed validation and current season on new page load 
 
-### Story 5: Add custom validation & fix display bug
+### Story 5: Add custom validation and fix display bug
 -	Prevent the creation of Productions with null Evening and Matinee showtimes.  
 -	Fix error on the Details page of Production will not display a production with null showtimes.  
 -	Validate that at least one showtime is provided to allow saving a new production.
