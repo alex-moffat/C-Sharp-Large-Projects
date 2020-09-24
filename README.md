@@ -7,8 +7,8 @@ I had an opportunity to work on a two-week spring of a large-scale ASP .NET MVC 
 This project is built using ASP .Net MVC and Entity Framework. This project is the interactive website for managing the content and productions for a theater/acting company. It's meant to be a content management service (aka CMS) for users who are not technically saavy and want to easily manage what displays in their website. It's also meant to help manage login capability for subscribers, and maintain a wiki of past performances and performers. 
 
 ## CONTENT
-- [Story 1: Align Checkboxes](story-1-align-checkboxes)
-- [Story 2: Replace static images on home page with carousels](story-2-replace-static-images-on-home-page-with-carousels)
+- [Story 1: Align Checkboxes](#story-1-align-checkboxes)
+- [Story 2: Replace static images on home page with carousels](#story-2-replace-static-images-on-home-page-with-carousels)
 
 ## STORIES
 ### Story 1: Align Checkboxes
