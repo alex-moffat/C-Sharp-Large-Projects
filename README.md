@@ -492,6 +492,49 @@ private List<ProductionPhotos> ShufflePhotos(List<ProductionPhotos> photos)
 -	Add validation to Part Create Page to check for cast member and production selection.
 -	Remove “character” input field, assign label to cast member name and change style with all non-Actor Part Types. 
 
+#### Final:
+![alt text](https://github.com/alex-moffat/C-Sharp-Large-Projects/blob/master/CS_Story_3.jpg "Story_3")
+
+#### CS
+```CS
+public ActionResult Create([Bind(Include = "PartID,Production,Person,Character,Type,Details")] Part part)
+    {
+        //=== VALIDATION - PRODUCTION check if selected from dropdown
+        if (Request.Form["Production"] != "")
+        {
+            int productionID = Convert.ToInt32(Request.Form["Production"]);
+            var production = db.Productions.Find(productionID);
+            part.Production = production;
+            ModelState.Remove("Production"); // manual remove error - throws by default due to Part model [Required] validation can't match to dropdown
+        }
+        //=== VALIDATION - PERSON check if selected from dropdown
+        if (Request.Form["Person"] != "")
+        {
+            int castID = Convert.ToInt32(Request.Form["Person"]);
+            var person = db.CastMembers.Find(castID);
+            part.Person = person;
+            ModelState.Remove("Person"); // manual remove error - throws by default due to Part model [Required] validation can't match to dropdown
+        }
+        //=== VALIDATION - FORM
+        if (ModelState.IsValid)
+        {
+            //=== IS VALID - lookup production and cast member objects based on form value "Id" for each
+            db.Parts.Add(part);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+        else
+        {
+            //=== NOT VALID - reload dropdown menus then return part to view 
+            ViewData["dbUsers"] = new SelectList(db.Users.ToList(), "Id", "UserName");
+            ViewData["CastMembers"] = new SelectList(db.CastMembers.ToList(), "CastMemberId", "Name");
+            ViewData["Productions"] = new SelectList(db.Productions.ToList(), "ProductionId", "Title");
+            return View(part);
+        }            
+    }
+```
+
+
 ### Story 4: Enable photo update during Production creation  
 -	Create an input field in the Productions Create page that allows the admin to be able to select a photo from their file system.
 -	When the Create form submits, new Photo and Production Photo records are created
