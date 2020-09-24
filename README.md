@@ -9,6 +9,9 @@ This project is built using ASP .Net MVC and Entity Framework. This project is t
 ## CONTENT
 - [Story 1: Align Checkboxes](#story-1-align-checkboxes)
 - [Story 2: Replace static images on home page with carousels](#story-2-replace-static-images-on-home-page-with-carousels)
+- [Story 3: Emulate part details card with part create form](#story-3-emulate-part-details-card-with-part-create-form)
+- [Story 4: Enable photo update during Production creation](#story-4-enable-photo-update-during-production-creation)
+- [Story 5: Add custom validation and fix display bug](#story-5-add-custom-validation-and-fix-display-bug)
 
 ## STORIES
 ### Story 1: Align Checkboxes
@@ -18,6 +21,50 @@ This project is built using ASP .Net MVC and Entity Framework. This project is t
 -	Remove focus highlight from checkbox container border
 -	Center labels for CastYearLeft and DebutYear
 
+#### Before/After:
+![alt text](https://github.com/alex-moffat/C-Sharp-Large-Projects/blob/master/CS_Story_1.jpg "Story_1")
+
+#### CSHTML:
+```
+<!--===== CHECKBOXES - match column width for group container =====-->
+<div class="container col-md-10 text-center">
+    <div class="row justify-content-center">
+        <!--=== AssociateArtist ===-->
+        <div class="form-group">
+            @Html.LabelFor(model => model.AssociateArtist, htmlAttributes: new { @class = "control-label inputLabel" })
+            <div class="focus-negate">
+                @Html.EditorFor(model => model.AssociateArtist, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.AssociateArtist, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <!--=== EnsembleMember ===-->
+        <div class="mx-4 form-group">
+            @Html.LabelFor(model => model.EnsembleMember, htmlAttributes: new { @class = "control-label inputLabel" })
+            <div class="focus-negate">
+                @Html.EditorFor(model => model.EnsembleMember, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.EnsembleMember, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <!--=== CurrentMember ===-->
+        <div class="form-group">
+            @Html.LabelFor(model => model.CurrentMember, htmlAttributes: new { @class = "control-label inputLabel" })
+            <div class="focus-negate">
+                @Html.EditorFor(model => model.CurrentMember, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.CurrentMember, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+</div>
+```
+#### CSS:
+```
+/*===== FOCUS NEGATE - selective remove focus highlight style from bootstrap form-control elements =====*/
+.focus-negate .form-control:focus {
+    border-color: none;
+    box-shadow: none;
+}
+```
+
 ### Story 2: Replace static images on home page with carousels 
 -	Create carousel for each production that automatically rotates through all available Production Photos.
 -	Randomize production photo order
@@ -26,7 +73,258 @@ This project is built using ASP .Net MVC and Entity Framework. This project is t
 -	Maintain the responsiveness of the page, images, and production content.
 -	Maintain style for production content and image overlay effects
 -	Reduce code base by 200+ lines
-- Identify and comment 250+ obsolete code
+-   Identify and comment 250+ obsolete code
+
+#### CSS:
+```
+/*=========================================
+========== HOMEPAGE =======================
+===========================================*/
+
+/*===== BODY - page format */
+.home-body {
+    position: relative;
+    -webkit-box-flex: 1;
+    -ms-flex: 1 0 auto;
+    flex: 1 0 auto;
+}
+
+/*===== MAIN - general display, font settings */
+#home-main {
+    display: block;
+    font-size: 100%;
+    font-family: BebasNeue;
+    font-weight: 400;
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+/*===== HOME BLOCK - production carousels and info  */
+.home-block, .home-inner {
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: 0;
+    vertical-align: baseline;
+    position: relative;
+    overflow: hidden;
+}
+/*=== Carousel nav buttons */
+.home-carousel-nav {
+    z-index: 2;
+}
+
+/*===== TINT PHOTO OVERLAY - visable only on large screens */
+.home-tint-overlay {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    z-index: 1;
+    background: -webkit-gradient(linear,left top,left bottom,color-stop(53.92%,rgba(35,31,32,0)),color-stop(72.5%,rgba(35,31,32,.6)));
+    background: linear-gradient(rgba(35,31,32,0) 53.92%,rgba(35,31,32,.6) 72.5%);
+    -webkit-transition: inherit;
+    transition: opacity ease-in-out 3s;
+}
+@media only screen and (max-width: 48em) {
+    .home-tint-overlay {
+        display: none;
+    }
+}
+
+/*===== HOME CONTENT - Absolute position over photos, relative position for small screens */
+.home-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    text-align: center;
+    color: #fff;
+    margin-bottom: 2.5rem;
+    z-index: 1;
+    width: 100%;
+    max-width: 92rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+/*=== Large screens- In front of Carousel */
+@media only screen and (min-width: 48.0625em) {
+    .home-content {
+        max-width: 94rem;
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
+/*=== X-Large screens - In front of Carousel */
+@media only screen and (min-width: 64.125em) {
+    .home-content {
+        max-width: 99.75rem;
+        padding-left: 4.875rem;
+        padding-right: 4.875rem;
+    }
+}
+/*=== Small screens - drops below Carousel on page */
+@media (max-width: 48em) {
+    .home-content {
+        position: relative;
+        text-align: left;
+        -webkit-box-pack: start;
+        -ms-flex-pack: start;
+        justify-content: flex-start;
+        margin: .5rem 0 1rem;
+        z-index: 0;
+        opacity: 1;
+    }
+}
+
+.home-content-inner {
+    width: 100%;
+}
+
+/*===== PRODUCTION TITLE */
+.home-title {
+    display: block;
+    margin: 0;
+    line-height: 1;
+    font-size: 13rem;
+    font-weight: 400;
+    background: transparent;
+    color: var(--light-color);
+    text-shadow: var(--dark-color) 0px 0px 10px;    
+}
+/*=== X-Large screens */
+@media only screen and (max-width: 80em) {
+    .home-title {
+        font-size: 10rem;
+    }
+}
+/*=== Large screens */
+@media only screen and (max-width: 64.0625em) {
+    .home-title {
+        font-size: 7.5rem;
+    }
+}
+/*=== Small screens */
+@media only screen and (max-width: 48em) {
+    .home-title {
+        font-size: 2.5rem;
+        color: var(--light-color);
+        margin-bottom: 0 !important;
+    }
+}
+
+/*===== PRODUCTION DATE */
+.home-date {
+    font-family: Arial, sans-serif;
+    font-size: 1.5rem;
+    margin: -.25rem 0 1.25rem;
+}
+/*=== Small screens */
+@media only screen and (max-width: 48em) {
+    .home-date {
+        color: var(--light-color);
+        font-size: .875rem;
+        margin: 0 0 .25rem;
+    }
+}
+
+/*===== PRODUCTION DETAILS BUTTON */
+.home-content .btn-primary {
+    display: inline-block;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding: .75rem 1rem;
+    font-family: Arial;
+    text-decoration: none;
+    text-transform: uppercase;
+    text-align: center;
+    min-width: 7.5rem;
+    border-radius: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    background-color: var(--main-bg-color);
+    color: var(--light-color);
+    border: 1px solid var(--main-bg-color);
+}
+/*=== Button focus, hover, active */
+.home-content .btn-primary:focus {
+    background-color: rgba(0, 0, 0, .6);
+    color: var(--main-bg-color);
+    border: 1px solid var(--main-bg-color);
+    box-shadow: none;
+}
+.home-content .btn-primary:active:hover {
+    background-color: rgba(0, 0, 0, .6);
+    color: var(--main-bg-color);
+    border: 1px solid var(--main-bg-color);
+    box-shadow: none !important;
+}
+.home-content .btn-primary:hover {
+    background-color: rgba(219, 26, 17, .7);
+}
+/*=== Small screens */
+@media only screen and (max-width: 48em) {
+    .home-content .btn-primary {
+        margin-top: .625rem;
+        font-size: .875rem;
+        line-height: 1.7143;
+        color: var(--dark-color);
+    }
+}
+
+/*========== HOME NAV - dots on right side of screen, display current vertical position and jump to vertical position  */
+/*===== Positioning of navbar on screen */
+#home-nav {
+    position: fixed;
+    top: 50%;
+    right: 2.5rem;
+    color: #fff;
+    z-index: 100;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+/*=== Not visable on small screens */
+@media only screen and (max-width:48em) {
+    #home-nav {
+        display: none;
+    }
+}
+
+/*===== Dot format */
+#home-nav a {
+    display: block;
+    border-bottom: none;
+    margin-bottom: .5rem;
+    background-color: #fff;
+    width: .75rem;
+    height: .75rem;
+    border: 1px solid var(--dark-color);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/*===== Dot hover, active, focus */
+#home-nav a:hover {
+    background-color: var(--secondary-color);
+}
+#home-nav li.active a {
+    background-color: var(--main-bg-color);
+}
+#home-nav a:focus {
+    box-shadow: 0px 2px 0 0 var(--dark-color) !important;
+    outline: 0;
+}
+```
 
 ### Story 3: Emulate part details card with part create form 
 -	Change the Part Create page so admin knows what the Part card is going to look like as they are creating it.  
@@ -48,7 +346,7 @@ This project is built using ASP .Net MVC and Entity Framework. This project is t
 ### Story 4: Enable photo update during Production creation  
 -	Create an input field in the Productions Create page that allows the admin to be able to select a photo from their file system.
 -	When the Create form submits, new Photo and Production Photo records are created
-- The Production's DefaultPhoto field is set to new ProductionPhoto Id.
+-   The Production's DefaultPhoto field is set to new ProductionPhoto Id.
 -	File input placed below the Closing Day input field.
 -	<b>Create validation method to check if uploaded file is a photo file type</b>
 -	Make name field required for production creation
@@ -57,7 +355,7 @@ This project is built using ASP .Net MVC and Entity Framework. This project is t
 -	Allow Create production without photo if no upload file is given
 -	Use selected Season after failed validation and current season on new page load 
 
-### Story 5: Add custom validation & fix display bug
+### Story 5: Add custom validation and fix display bug
 -	Prevent the creation of Productions with null Evening and Matinee showtimes.  
 -	Fix error on the Details page of Production will not display a production with null showtimes.  
 -	Validate that at least one showtime is provided to allow saving a new production.
