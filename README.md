@@ -492,7 +492,7 @@ private List<ProductionPhotos> ShufflePhotos(List<ProductionPhotos> photos)
 -	Add validation to Part Create Page to check for cast member and production selection.
 -	Remove “character” input field, assign label to cast member name and change style with all non-Actor Part Types. 
 
-#### Final:
+#### Before/After:
 ![alt text](https://github.com/alex-moffat/C-Sharp-Large-Projects/blob/master/CS_Story_3.jpg "Story_3")
 
 #### CS
