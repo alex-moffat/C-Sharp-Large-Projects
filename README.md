@@ -25,7 +25,7 @@ This project is built using ASP .Net MVC and Entity Framework. This project is t
 ![alt text](https://github.com/alex-moffat/C-Sharp-Large-Projects/blob/master/CS_Story_1.jpg "Story_1")
 
 #### CSHTML:
-```
+```HTML
 <!--===== CHECKBOXES - match column width for group container =====-->
 <div class="container col-md-10 text-center">
     <div class="row justify-content-center">
@@ -57,7 +57,7 @@ This project is built using ASP .Net MVC and Entity Framework. This project is t
 </div>
 ```
 #### CSS:
-```
+```CSS
 /*===== FOCUS NEGATE - selective remove focus highlight style from bootstrap form-control elements =====*/
 .focus-negate .form-control:focus {
     border-color: none;
@@ -75,8 +75,157 @@ This project is built using ASP .Net MVC and Entity Framework. This project is t
 -	Reduce code base by 200+ lines
 -   Identify and comment 250+ obsolete code
 
-#### CSS:
+#### Final:
+![alt text](https://github.com/alex-moffat/C-Sharp-Large-Projects/blob/master/CS_Story_2.jpg "Story_2")
+
+#### CS:
+```CS
+public ActionResult Index()
+    {
+        //==== LIST OF PRODUCTIONS - Filter by current and future productions
+        var query = db.Productions.Where(p => p.OpeningDay > DateTime.Now || p.IsCurrent == true || (p.OpeningDay <= DateTime.Now && p.ClosingDay >= DateTime.Now))
+            .OrderBy(p => p.OpeningDay);
+        //===== ORDER PRODUCTIONS
+        var orderedProductions = SortProductions(query.ToList());
+        //===== PRODUCTION PICTURES - create list of productionPhotos objects for each production, randomize order of photo objects, nest productionPhotos objects list in a list, store list in ViewBag dictionary 
+        var productionPhotosList = new List<List<ProductionPhotos>>();
+        foreach (Production production in orderedProductions)
+        {
+            var photoArray = db.ProductionPhotos.Where(p => p.Production.ProductionId == production.ProductionId).ToList();
+            productionPhotosList.Add(ShufflePhotos(photoArray));
+            //DEBUG System.Diagnostics.Debug.WriteLine(photoArray.Count);
+        }
+        ViewBag.ProductionPhotosList = productionPhotosList;
+
+        return View(orderedProductions);
+    }
+    
+//===== SHUFFLE PHOTOS - takes a list of ProductionPhoto objects and shuffles them
+private static readonly Random random = new Random();
+
+private List<ProductionPhotos> ShufflePhotos(List<ProductionPhotos> photos)
+    {
+        int n = photos.Count;
+        while (n > 1)
+        {
+            n--;
+            int rnd = random.Next(n + 1);
+            ProductionPhotos value = photos[rnd];
+            photos[rnd] = photos[n];
+            photos[n] = value;
+        }
+        return photos;
+    }    
 ```
+
+
+#### CSHTML:
+```CSHTML
+<div class="home-body">
+    <main id="home-main">
+        <!--========== MAIN CONTENT - production carousels and info ==========-->
+        <div>
+            <!--===== LOOP EACH PRODUCTION =====-->
+            @foreach (var item in Model)
+            {
+                <!--===== PRODUCTION - Container for Carousel & Content =====-->
+                <div class="home-block">
+                    <div class="home-tint-overlay"></div>
+                    <!--===== CAROUSEL =====-->
+                    <div id="index-block-@i" class="carousel slide" data-interval="10000" data-ride="carousel">
+                        <!--===== CAROUSEL INDICATORS -->
+                        <ol class="carousel-indicators">
+                            @{
+                                <!--=== First slide -->
+                                <li data-target="#index-block-@i" data-slide-to="@photoIndex" class="active"></li>
+                                <!--=== More than one slide -->
+                                if (productionPhotosList[productionIndex].Count > 1)
+                                {
+                                    photoIndex++;
+                                    while (photoIndex < productionPhotosList[productionIndex].Count)
+                                    {
+                                        <li data-target="#index-block-@i" data-slide-to="@photoIndex"></li>
+                                        photoIndex++;
+                                    }
+                                    photoIndex = 0;
+                                }
+                            }
+                        </ol>
+                        <!--===== CAROUSEL SLIDE -->
+                        <div class="carousel-inner">
+                            @{
+                                <!--=== Check if photos -->
+                                if (productionPhotosList[productionIndex].Count == 0)
+                                {
+                                    <div class="carousel-item active">
+                                        <img class="d-block w-100" src="~/Content/Images/Unavailable.png" alt='@item.Title' />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <!--=== First slide -->
+                                    <div class="carousel-item active">
+                                        <img class="d-block w-100" src='@Url.Action("DisplayPhoto", "Photo", new { id = productionPhotosList[productionIndex][photoIndex].PhotoId })' alt='@productionPhotosList[productionIndex][photoIndex].Description' />
+                                    </div>
+                                    <!--=== More than one slide -->
+                                    if (productionPhotosList[productionIndex].Count > 1)
+                                    {
+                                        photoIndex++;
+                                        while (photoIndex < productionPhotosList[productionIndex].Count)
+                                        {
+                                            <div class="carousel-item">
+                                                <img class="d-block w-100" src='@Url.Action("DisplayPhoto", "Photo", new { id = productionPhotosList[productionIndex][photoIndex].PhotoId })' alt='@productionPhotosList[productionIndex][photoIndex].Description' />
+                                            </div>
+                                            photoIndex++;
+                                        }
+                                        photoIndex = 0;
+                                    }
+                                }
+                            }
+                        </div>
+                        <!--===== CAROUSEL CONTROLS -->
+                        <a class="home-carousel-nav carousel-control-prev" href="#index-block-@i" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="home-carousel-nav carousel-control-next" href="#index-block-@i" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+
+                    <!--===== PRODUCTION - Content =====-->
+                    <div class="home-content">
+                        <div class="home-content-inner">
+                            <h2 class="home-title">@item.Title</h2>
+                            <p class="home-date">@item.OpeningDay.ToString("dddd, MMMM %d, yyyy") - @item.ClosingDay.ToString("dddd, MMMM %d, yyyy")</p>
+                            <a class="btn-primary" href="@Url.Action("Details", "Productions", new { id = item.ProductionId })">Details</a>
+                        </div>
+                    </div>
+                </div>
+                i++;
+                productionIndex++;               
+            }
+        </div>
+        <!--========== NAV BAR - vertical page position ==========-->
+        <nav>
+            <ul id="home-nav">
+                @{ i = 1; }
+                @foreach (var item in Model)
+                {
+                    <li>
+                        <a class="home-nav-link" href="#index-block-@i"></a>
+                    </li>
+                    i++;
+                }
+            </ul>
+        </nav>
+    </main>
+</div>
+```
+
+#### CSS:
+```CSS
 /*=========================================
 ========== HOMEPAGE =======================
 ===========================================*/
