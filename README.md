@@ -11,7 +11,7 @@ This project is built using ASP .Net MVC and Entity Framework. This project is t
 - [Story 2: Replace static images on home page with carousels](#story-2-replace-static-images-on-home-page-with-carousels)
 - [Story 3: Emulate part details card with part create form](#story-3-emulate-part-details-card-with-part-create-form)
 - [Story 4: Enable photo update during Production creation](#story-4-enable-photo-update-during-production-creation)
-- [Story 5: Add custom validation and fix display bug](#story-5)
+- [Story 5: Add custom validation and fix display bug](#story-5-add-custom-validation-and-fix-display-bug)
 
 ## STORIES
 ### Story 1: Align Checkboxes
