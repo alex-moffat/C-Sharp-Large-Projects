@@ -75,6 +75,9 @@ This project is built using ASP .Net MVC and Entity Framework. This project is t
 -	Reduce code base by 200+ lines
 -   Identify and comment 250+ obsolete code
 
+#### Final:
+![alt text](https://github.com/alex-moffat/C-Sharp-Large-Projects/blob/master/CS_Story_2.jpg "Story_2")
+
 #### CS:
 ```CS
 public ActionResult Index()
