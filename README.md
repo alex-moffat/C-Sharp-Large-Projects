@@ -21,10 +21,10 @@ This project is built using ASP .Net MVC and Entity Framework. This project is t
 -	Remove focus highlight from checkbox container border
 -	Center labels for CastYearLeft and DebutYear
 
-####Before/After:
+#### Before/After:
 ![alt text](https://github.com/alex-moffat/C-Sharp-Large-Projects/blob/master/CS_Story_1.jpg "Story_1")
 
-####CSHTML:
+#### CSHTML:
 ```
 <!--===== CHECKBOXES - match column width for group container =====-->
 <div class="container col-md-10 text-center">
@@ -56,7 +56,7 @@ This project is built using ASP .Net MVC and Entity Framework. This project is t
     </div>
 </div>
 ```
-####Custom CSS:
+#### Custom CSS:
 ```
 /*===== FOCUS NEGATE - selective remove focus highlight style from bootstrap form-control elements =====*/
 .focus-negate .form-control:focus {
