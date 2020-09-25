@@ -826,6 +826,39 @@ public static bool ValidatePhoto(HttpPostedFileBase postedFile)
 }
 ```
 
+#### CSHTML:
+```CSHTML
+<!--===== DEFAULT PHOTO =====-->
+<div class="form-group">
+    @Html.LabelFor(model => model.DefaultPhoto, htmlAttributes: new { @class = "control-label col-md-4 inputLabel" })
+    <div class="col-md-10 formBox text-center">
+        <!--=== Manual validation of the photo upload handled in ProductionsController -->
+        @Html.TextBox("uploadFile", null, new { type = "file", @class = "text-black" })
+        <!--=== Hidden required to validate DefaultPhoto (foreignkey reference) that is a non-file datatype -->
+        @Html.HiddenFor(m => m.DefaultPhoto)
+        <!--=== Puts validation message on new line -->
+        <div>@Html.ValidationMessageFor(model => model.DefaultPhoto, "", new { @class = "text-white" })</div>
+    </div>
+</div>
+
+<!--===== SEASON =====-->
+<div class="form-group">
+    @Html.LabelFor(model => model.Season, htmlAttributes: new { @class = "control-label col-md-4 inputLabel" })
+    <div class="col-md-10 formBox">
+        <!--=== Check if return after failed validation (use form data filled in), else new Create view will use currentSeason as default===-->
+        @if (Model != null)
+        {
+            @Html.EditorFor(model => model.Season, new { htmlAttributes = new { @class = "form-control" } })
+        }
+        else
+        {
+            @Html.EditorFor(model => model.Season, new { htmlAttributes = new { @class = "form-control", @Value = (int)ViewData["current_season"] } })
+        }
+        @Html.ValidationMessageFor(model => model.Season, "", new { @class = "text-danger" })
+    </div>
+</div>
+```
+
 ### Story 5: Add custom validation and fix display bug
 -	Prevent the creation of Productions with null Evening and Matinee showtimes.  
 -	Fix error on the Details page of Production will not display a production with null showtimes.  
