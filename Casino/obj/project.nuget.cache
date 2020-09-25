@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "qnIzgcKpEntdBU5uRI3OYRZB9Eka1fkO9cIhFc4jq5rS5S5nbIbpGWrE0ZF8IHWRsRChTpmnQKcFmo64TedZGw==",
+  "dgSpecHash": "vz8sZrF+rRnFwCfb2qHjYlbStLGi3R1yeEenJ5HqYvU6f3H0fLma4fC+BBoc6//fMq0VSMR0/3FxjGIU1nT/Ag==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Alexander\\Desktop\\GIT_local\\C-Sharp-Large-Projects\\Casino\\Casino.csproj",
+  "projectFilePath": "C:\\Users\\Alexander\\Documents\\GitHub\\C-Sharp-Large-Projects\\Casino\\Casino.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Alexander\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
     "C:\\Users\\Alexander\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"

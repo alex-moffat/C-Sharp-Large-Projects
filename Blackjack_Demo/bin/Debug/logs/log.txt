@@ -1,2 +1,10 @@
 ========== BLACKJACK LOG ==========
-8/3/2020 5:08:12 PM
+9/24/2020 7:58:50 PM
+9/24/2020 7:59:06 PM Player Alex joined the game. ID = 8f01e71c-520e-4df0-a100-bb9a30d8d918
+9/24/2020 7:59:32 PM Player Moffat joined the game. ID = fca3fc5f-66a2-4e49-8c5b-02cebf23a7fb
+9/24/2020 7:59:49 PM Doc Holliday: Seven of Clubs
+9/24/2020 7:59:49 PM Alex: Queen of Spades
+9/24/2020 7:59:49 PM Moffat: Five of Spades
+9/24/2020 7:59:49 PM Doc Holliday: Five of Hearts
+9/24/2020 7:59:49 PM Alex: Six of Diamonds
+9/24/2020 7:59:49 PM Moffat: Four of Clubs

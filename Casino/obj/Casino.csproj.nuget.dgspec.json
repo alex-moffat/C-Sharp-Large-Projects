@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Alexander\\Desktop\\GIT_local\\C-Sharp-Large-Projects\\Casino\\Casino.csproj": {}
+    "C:\\Users\\Alexander\\Documents\\GitHub\\C-Sharp-Large-Projects\\Casino\\Casino.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Alexander\\Desktop\\GIT_local\\C-Sharp-Large-Projects\\Casino\\Casino.csproj": {
+    "C:\\Users\\Alexander\\Documents\\GitHub\\C-Sharp-Large-Projects\\Casino\\Casino.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Alexander\\Desktop\\GIT_local\\C-Sharp-Large-Projects\\Casino\\Casino.csproj",
+        "projectUniqueName": "C:\\Users\\Alexander\\Documents\\GitHub\\C-Sharp-Large-Projects\\Casino\\Casino.csproj",
         "projectName": "Casino",
-        "projectPath": "C:\\Users\\Alexander\\Desktop\\GIT_local\\C-Sharp-Large-Projects\\Casino\\Casino.csproj",
+        "projectPath": "C:\\Users\\Alexander\\Documents\\GitHub\\C-Sharp-Large-Projects\\Casino\\Casino.csproj",
         "packagesPath": "C:\\Users\\Alexander\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Alexander\\Desktop\\GIT_local\\C-Sharp-Large-Projects\\Casino\\obj\\",
+        "outputPath": "C:\\Users\\Alexander\\Documents\\GitHub\\C-Sharp-Large-Projects\\Casino\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Alexander\\AppData\\Roaming\\NuGet\\NuGet.Config",
