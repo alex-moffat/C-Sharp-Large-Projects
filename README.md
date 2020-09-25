@@ -1,19 +1,24 @@
 # C-Sharp-Large-Projects
 
+## CONTENT
+- [LIVE PROJECT](#live-project)
+- [BLACKJACK DEMO - Console Application](#blackjack-demo)
+
 ## LIVE PROJECT
 I had an opportunity to work on a two-week spring of a large-scale ASP .NET MVC website with 6 other developers. Within a couple days I was able to get up speed on a large existing codebase from multiple prior contributors that was being altered to satisfy future roadmap specifications. During my time on the project I seamlessly merged code that made significant improvements to a large existing web application without comprising legacy functionality. During the two-week project I completed five stories that improved back-end functionality and front-end design while identifying and fixing existing bugs. Even during the short span of time, I was able to connect and collaborate with team members to help accelerate their stories.
 
 ### Description
 This project is built using ASP .Net MVC and Entity Framework. This project is the interactive website for managing the content and productions for a theater/acting company. It's meant to be a content management service (aka CMS) for users who are not technically saavy and want to easily manage what displays in their website. It's also meant to help manage login capability for subscribers, and maintain a wiki of past performances and performers. 
 
-## CONTENT
+## STORIES
 - [Story 1: Align Checkboxes](#story-1-align-checkboxes)
 - [Story 2: Replace static images on home page with carousels](#story-2-replace-static-images-on-home-page-with-carousels)
 - [Story 3: Emulate part details card with part create form](#story-3-emulate-part-details-card-with-part-create-form)
 - [Story 4: Enable photo update during Production creation](#story-4-enable-photo-update-during-production-creation)
 - [Story 5: Add custom validation and fix display bug](#story-5-add-custom-validation-and-fix-display-bug)
 
-## STORIES
+
+## STORY DETAILS
 ### Story 1: Align Checkboxes
 -	Align Checkboxes on CastMember Create Page
 -	Create three responsive columns
@@ -951,4 +956,621 @@ CSHTML:
         }                    
     </dl>
 </li>
+```
+
+## BLACKJACK DEMO
+I developed a console application to demonstrate OOP programming and logic with C#. This fully functioning demo allows multiple players to play a casino style blackjack rules with a virtual dealer. Multiple decks are created and scaled with the number of players. Player and dealer chip accounting and balances are maintained, betting limits and user errors are accounted for. Casino rules twenty-one logic is used to establish winners and losers. Players can leave or continue and are automatically removed from game when balance reaches zero. Sample code snippets provided below. Fraud logging to database for those trying to bet negative values (intentional) and admin login to display all DB records to demonstrate DB handling. The main program was written in the Blackjack namespace with reference to the Casino namespace.   
+
+### Select Code Snippets
+- [Program.cs: main program](#program)
+- [BlackjackGame.cs: gameplay](#blackjackgame)
+- [BlackjackRules.cs: check for win conditions etc.](#blackjackrules)
+- [Deck.cs: creation and shuffle decks](#deck)
+
+#### Program
+```CS
+namespace Blackjack
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //========== CASINO NAME
+            const string casinoName = "Grand Hotel and Casino";
+
+            //========== LOG FILE
+            string logDir = Directory.GetCurrentDirectory() + @"\logs";
+            string logFile = logDir + @"\log.txt";
+            if (!Directory.Exists(logDir)) Directory.CreateDirectory(logDir);
+            string logTxt = string.Format("========== BLACKJACK LOG ==========\n{0}\n", DateTime.Now);
+            File.WriteAllText(logFile, logTxt);
+
+            //========== GAME SETUP
+            Console.BackgroundColor = ConsoleColor.DarkGreen;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Clear();
+            Console.WriteLine("\n===================================================\n=====( Welcome to the {0} )=====\n===================================================\n", casinoName);
+            Game game = new BlackjackGame();
+
+            //========== ADD PLAYERS
+            const int maxPlayers = 7;
+            bool addPlayers = true;
+            string playerName;            
+
+            while (addPlayers && game.Players.Count < maxPlayers)
+            {
+                Console.WriteLine("\nPlayer, what is your name?");
+                playerName = Console.ReadLine();
+                playerName = playerName[0].ToString().ToUpper() + playerName.Substring(1);
+                //===== ADMIN ENTRY
+                if (playerName == "Admin")
+                {
+                    List<ExceptionEntity> exceptions = ReadExceptions();
+                    foreach (var e in exceptions)
+                    {
+                        Console.Write(e.Id + " | ");
+                        Console.Write(string.Format("{0} | ", e.ExceptionType));
+                        Console.Write(string.Format("{0} | ", e.ExceptionMessage));
+                        Console.WriteLine(string.Format("{0} \n", e.TimeStamp));                        
+                    }
+                    Console.Read();
+                    return;
+                }
+                //===== PLAYER ENTRY
+                Player player = new Player(playerName); // asks for player bank if not provided
+                if (player.Balance > 0)
+                {
+                    Console.WriteLine("Hello {0}. Would you like to join a game of Blackjack right now?", playerName);
+                    if (Console.ReadLine().ToLower().Contains("y"))
+                    {
+                        game += player;
+                        Console.WriteLine("-->{0} added to game.", playerName);
+                    }                    
+                }
+                if (game.Players.Count < maxPlayers)
+                {
+                    Console.WriteLine("\nIs someone else joining today?");
+                    if (Console.ReadLine().ToLower().Contains("n")) addPlayers = false;
+                }
+            }
+            
+            //========== PLAY - continue to play rounds until NO players are actively playing or have a balance > 0
+            while (game.Players.Count > 0)
+            {
+                //----- Play game
+                try
+                {
+                    game.Play();
+                }
+                catch (FraudException e)
+                {
+                    UpdateDbException(e);
+                    Console.WriteLine("SECURITY! Throw this person out.");
+                    Console.ReadLine();
+                    return;
+                }
+                catch (Exception e)
+                {
+                    UpdateDbException(e);
+                    Console.WriteLine("ERROR. Please contact your system administrator.");
+                    Console.WriteLine("ERROR: " + e.Message);
+                    Console.ReadLine();
+                    return;
+                }
+                //----- Player removal
+                List<Player> removals = new List<Player>();
+                removals = game.Players.Where(x => !x.ActivelyPlaying || x.Balance == 0).ToList();
+                foreach (Player player in removals)
+                {
+                    game -= player;
+                }                
+            }
+            
+            //========== GAME OVER
+            Console.WriteLine("\n===Thank you for playing.");
+            Console.WriteLine("Feel free to look aroung the casino. Bye for now.");
+
+
+            //========== TESTS ==========
+
+            //string str1 = "Here is some text.\nMore on a new line.\tHere is some after a tab.";
+            //File.WriteAllText(logFile, str1);
+
+            //string txt = File.ReadAllText(logFile);
+            //Console.WriteLine(txt);
+
+
+            //===== CREATE DECK
+            //Deck deck = new Deck();
+
+            //===== SHUFFLE DECK
+            //deck.Shuffle(times: 4, true);
+
+            //===== lambda functions
+            //int count = deck.Cards.Count(x => x.Face == Face.Ace); 
+            //Console.WriteLine(count);
+
+            //List<Card> newList = deck.Cards.Where(x => x.Face == Face.Ace).ToList();
+            //foreach (Card card in newList) { Console.WriteLine(card.Face); }
+
+            //List<int> numList = new List<int>() { 1,2,3,535,342,23 };
+            //int sum = numList.Sum();
+            //Console.WriteLine(sum);
+            //int sumPlus = numList.Sum(x => x + 1);
+            //Console.WriteLine(sumPlus);
+            //int max = numList.Max();
+            //Console.WriteLine(max);
+            //int min = numList.Min();
+            //Console.WriteLine(min);
+            //int sumBig = numList.Where(x => x > 100).Sum();
+            //Console.WriteLine(sumBig);
+            //Console.WriteLine(numList.Where(x => x > 100).Sum());
+
+            //===== Overloaded operator
+            //Game game = new BlackjackGame() { Name = "BlackJack", Dealer = "Doc Holliday", Players = new List<Player>() };
+            //Player p1 = new Player() { Name = "Wyatt Earp" };
+            //Player p2 = new Player() { Name = "Jesse James" };
+            //game = game + p1 + p2;
+            //game.ListPlayers();
+            //game = game - p2;
+            //game.ListPlayers();
+
+            //deck.ListCards(loop: "foreach");
+
+            //Dealer dealer = new Dealer();
+            //dealer.Name = "Alex";
+            //Console.WriteLine(dealer.Name); // can get/set public properties when base class is not explicitly public
+
+            //Game game2 = new Game(); // can't create a new object based on an abstract class
+
+            //===== HOLD OPEN - till enter is pressed
+            Console.ReadLine();
+        }
+
+        private static void UpdateDbException(Exception e)
+        {
+            string connectionStr = @"Data Source = (localdb)\MSSQLLocalDB; Initial Catalog = BalckjackGame; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False";
+            string queryStr = @"INSERT INTO Exceptions (ExceptionType, ExceptionMessage, TimeStamp) VALUES
+                                (@ExceptionType, @ExceptionMessage, @TimeStamp)";
+            using (SqlConnection connection = new SqlConnection(connectionStr))
+            {
+                SqlCommand command = new SqlCommand(queryStr, connection);
+                command.Parameters.Add("@ExceptionType", SqlDbType.VarChar);
+                command.Parameters.Add("@ExceptionMessage", SqlDbType.VarChar);
+                command.Parameters.Add("@TimeStamp", SqlDbType.DateTime);
+                command.Parameters["@ExceptionType"].Value = e.GetType().ToString();
+                command.Parameters["@ExceptionMessage"].Value = e.Message;
+                command.Parameters["@TimeStamp"].Value = DateTime.Now;
+
+                connection.Open();
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
+        }
+        private static List<ExceptionEntity> ReadExceptions()
+        {
+            string connectionStr = @"Data Source = (localdb)\MSSQLLocalDB; Initial Catalog = BalckjackGame; Integrated Security = True; Connect Timeout = 30; Encrypt = False; TrustServerCertificate = False; ApplicationIntent = ReadWrite; MultiSubnetFailover = False";
+            string queryStr = @"SELECT Id, ExceptionType, ExceptionMessage, TimeStamp FROM Exceptions";
+            List<ExceptionEntity> exceptions = new List<ExceptionEntity>();
+            
+            using (SqlConnection connection = new SqlConnection(connectionStr))
+            {
+                SqlCommand command = new SqlCommand(queryStr, connection);
+                
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    ExceptionEntity e = new ExceptionEntity(Convert.ToInt32(reader["Id"]), reader["ExceptionType"].ToString().Trim(), reader["ExceptionMessage"].ToString().Trim(), Convert.ToDateTime(reader["TimeStamp"]));
+                    exceptions.Add(e);
+                }
+                connection.Close();
+            }
+            return exceptions;
+        }
+    }
+}
+```
+
+#### BlackjackGame
+```CS
+namespace Casino.Blackjack
+{
+    public class BlackjackGame : Game, IWalkAway
+    {
+        //===== CONSTRUCTOR
+        public BlackjackGame() : base()
+        {
+            // using constructor from base Class "Game"
+            // creates new instances of Players, Bets
+            Dealer = new BlackjackDealer("", 0);
+        }
+
+        //===== PROPERTIES
+        public BlackjackDealer Dealer { get; set; }
+
+        //===== PLAY
+        public override void Play() //override satisfies the requirement for this child to have the parent method
+        {
+            //----- START set Dealer and declare variables at the beginning of game 
+            if (Dealer.Name == "") 
+            {
+                Dealer = new BlackjackDealer(name: "Doc Holliday", bank: int.MaxValue);
+                ListPlayers();
+            }
+            int bet;
+            bool isValid, winner;
+
+            //----- RESET each round
+            Dealer.Stay = Dealer.Blackjack = winner = false;
+            Dealer.Hand = new List<Card>();
+            Dealer.Deck = new Deck(deckCount:Players.Count);
+            foreach (Player p in Players)
+            {
+                p.Hand = new List<Card>();
+                p.Stay = false;
+            }
+
+            //----- BET for each player
+            Console.WriteLine("\n=== Place Bets...");
+            foreach (Player p in Players)
+            {
+                isValid = false;
+                while (!isValid)
+                {
+                    try
+                    {
+                        Console.WriteLine("{0} your bet:", p.Name);
+                        bet = Convert.ToInt32(Console.ReadLine());
+                        if (p.Bet(bet)) 
+                        { 
+                            isValid = true;
+                            Bets[p] = bet;
+                        }                        
+                    }
+                    catch (FraudException)
+                    {
+                        p.ActivelyPlaying = false;
+                        throw new FraudException(string.Format("Security! {0} has tried to commit fraud",p.Name));
+                        // Console.WriteLine("SECURITY! Throw this person out.");
+                        // Console.ReadLine();
+                        // return;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Oops...something went wrong:");
+                        Console.WriteLine(e.Message);
+                    }
+                }   
+            }
+
+            //----- DEAL START
+            Console.WriteLine("\n=== Dealing...");
+            for (int i = 0; i < 2; i++)
+            {
+                Dealer.Deal(Dealer.Hand, Dealer.Name);
+                foreach (Player p in Players) Dealer.Deal(p.Hand, p.Name);                
+            }
+            
+            //----- CHECK BLACKJACK - If dealer has Blackjack all players lose except those that also have Blackjack (Draw)
+            Dealer.Blackjack = BlackjackRules.CheckBlackjack(Dealer.Hand);
+            if (Dealer.Blackjack)
+            {
+                //--- Dealer Blackjack, all payouts, return
+                Console.WriteLine("\n=== Dealer gets Blackjack!");
+                foreach (Player p in Players)
+                {
+                    if (BlackjackRules.CheckBlackjack(p.Hand))
+                    {
+                        //--- DRAW player blackjack
+                        Dealer.Payout(Dealer, p, Bets, condition:"draw");                                                
+                    }
+                    else
+                    {
+                        //--- LOSE no blackjack
+                        Dealer.Payout(Dealer, p, Bets, condition: "lose");
+                    }                    
+                }
+                return;
+            }
+            else
+            {
+                //--- Dealer no Blackjack, check player Blackjack, payout if winner
+                winner = Players.Any(p => BlackjackRules.CheckBlackjack(p.Hand));
+                if (winner)
+                {
+                    foreach (Player p in Players)
+                    {
+                        if (BlackjackRules.CheckBlackjack(p.Hand))
+                        {
+                            Dealer.Payout(Dealer, p, Bets, condition: "blackjack");
+                        }                        
+                    }                    
+                }
+            }
+
+            //----- CONTINUE PLAY
+            Console.WriteLine("\n=== Continue Play...");
+            foreach (Player p in Players)
+            {
+                while (!p.Stay)
+                {
+                    //--- Hand display
+                    Console.WriteLine("\nDealer hand:");
+                    foreach (Card c in Dealer.Hand) Console.WriteLine("- {0}", c.ToString());
+                    Console.WriteLine("\n{0} your cards are:", p.Name);
+                    foreach (Card c in p.Hand) Console.WriteLine("- {0}", c.ToString());
+                    
+                    //--- Hit or Stay
+                    Console.WriteLine("\n Hit or Stay?");
+                    if (Console.ReadLine().ToLower().Contains("s")) 
+                    {
+                        p.Stay = true;
+                        break;
+                    }
+                    else
+                    {
+                        Dealer.Deal(p.Hand, p.Name);
+                    }
+                    
+                    //--- Check Busted
+                    if (BlackjackRules.CheckBusted(p.Hand)) Dealer.Payout(Dealer, p, Bets, condition: "bust");                    
+                }
+            }
+
+            //----- DEALER PLAY
+            if (Bets.Count() == 0) return; // check if all players are out
+            Dealer.Stay = BlackjackRules.CheckDealerStay(Dealer.Hand);
+            while (!Dealer.Stay && !Dealer.Bust)
+            {
+                Console.WriteLine("\n=== Dealer is hitting...");
+                Dealer.Deal(Dealer.Hand, Dealer.Name);
+                Dealer.Bust = BlackjackRules.CheckBusted(Dealer.Hand);
+                Dealer.Stay = BlackjackRules.CheckDealerStay(Dealer.Hand);
+            }
+            
+            //----- DEALER BUST
+            if (Dealer.Bust)
+            {
+                Console.WriteLine("\n=== Dealer Busted!");
+                //--- PAYOUT function - pay only thoses players that still have bets
+                foreach (Player p in Players.Where(x=> Bets.ContainsKey(x)))
+                {
+                    Dealer.Payout(Dealer, p, Bets, condition: "win");
+                }
+                
+                ////--- ALTERNATIVE - Lambda function method
+                //foreach (KeyValuePair<Player, int> entry in Bets)
+                //{    
+                //    Players.Where(p => p == entry.Key).First().Balance += (entry.Value * 2);
+                //}                
+            }
+            //----- DEALER STAY - check only thoses players that still have bets
+            else if (Dealer.Stay)
+            {
+                Console.WriteLine("\n=== Dealer is staying.");
+                foreach (Player p in Players.Where(x => Bets.ContainsKey(x))) 
+                {
+                    switch (BlackjackRules.CheckWin(Dealer.Hand, p.Hand))
+                    {
+                        case true: //--- player win
+                            Dealer.Payout(Dealer, p, Bets, condition: "win");
+                            break;
+                        case false: //--- dealer win
+                            Dealer.Payout(Dealer, p, Bets, condition: "lose");
+                            break;
+                        default: //--- draw
+                            Dealer.Payout(Dealer, p, Bets, condition: "draw");
+                            break;                        
+                    }
+                }                
+            }
+            return;
+        }
+
+        //===== LIST PLAYERS
+        public override void ListPlayers()
+        {
+            Console.WriteLine("===== Welcome To BLACKJACK =====");
+            Console.WriteLine("Your dealer is {0}.", Dealer.Name);
+            base.ListPlayers(); // this line is the same as all the code within base class method
+        }
+        //===== WALK AWAY
+        public void WalkAway(Player player)
+        {
+            throw new NotImplementedException();
+        }   
+        
+    }
+}
+```
+
+#### BlackjackRules
+```CS
+namespace Casino.Blackjack
+{
+    public class BlackjackRules
+    {
+        //===== PROPERTIES
+        private static Dictionary<Face, int> _cardValues = new Dictionary<Face, int>()
+        {
+            [Face.Two] = 2,
+            [Face.Three] = 3,
+            [Face.Four] = 4,
+            [Face.Five] = 5,
+            [Face.Six] = 6,
+            [Face.Seven] = 7,
+            [Face.Eight] = 8,
+            [Face.Nine] = 9,
+            [Face.Ten] = 10,
+            [Face.Jack] = 10,
+            [Face.Queen] = 10,
+            [Face.King] = 10,
+            [Face.Ace] = 1
+        };
+
+        //===== GET ALL HAND VALUES
+        private static int[] GetAllHandValues(List<Card> Hand)
+        {
+            int aceCount = Hand.Count(x => x.Face == Face.Ace);
+            int[] result = new int[aceCount + 1];
+            int value = Hand.Sum(x => _cardValues[x.Face]);
+            result[0] = value;
+            if (result.Length == 1) // triggered only if no Aces
+            { 
+                return result; 
+            }
+            else
+            {
+                for (int i = 1; i < result.Length; i++)
+                {
+                    value += (i * 10);
+                    result[i] = value;
+                }
+                return result;
+            }       
+        }
+        
+        //===== CHECK BLACKJACK
+        public static bool CheckBlackjack(List<Card> Hand)
+        {
+            if (Hand.Count == 2) { return (GetAllHandValues(Hand).Max() == 21) ? true : false; }
+            return false;
+            //---- VERBOSE option
+            //if (Hand.Count == 2)
+            //{
+            //    int[] possibleValues = GetAllHandValues(Hand);
+            //    int value = possibleValues.Max();
+            //    if (value == 21)
+            //    {
+            //        return true;
+            //    }
+            //    else
+            //    {
+            //        return false;
+            //    }
+            //}
+            //return false;
+        }
+
+        //===== CHECK BUSTED
+        public static bool CheckBusted(List<Card> Hand)
+        {
+            return (GetAllHandValues(Hand).Min() > 21) ? true : false;
+        }
+
+        //===== CHECK DEALER STAY
+        public static bool CheckDealerStay(List<Card> Hand)
+        {
+            return (GetAllHandValues(Hand).Any(x => x > 16 && x < 22)) ? true : false;
+        }
+
+        //===== CHECK WIN
+        public static bool? CheckWin(List<Card> dealerHand, List<Card> playerHand)
+        {
+            int dealerScore = GetAllHandValues(dealerHand).Where(x => x < 22).Max();
+            int playerScore = GetAllHandValues(playerHand).Where(x => x < 22).Max();
+            if (playerScore > dealerScore) return true;
+            else if (playerScore < dealerScore) return false;
+            else return null;
+        }
+    }
+}
+```
+
+#### Deck
+```CS
+namespace Casino
+{
+    public class Deck
+    {
+        //========== CONSTRUCTOR
+        public Deck(int deckCount=1)
+        {
+            Cards = new List<Card>();
+            //===== DECKS - iterate for a number of decks
+            for (int d=0; d < deckCount; d++)
+            {
+                //===== ENUM - construct a deck of cards using enum datatype
+                for (int f = 0; f < Enum.GetNames(typeof(Face)).Length; f++) // using the GetNames() method to build an array to get the length of
+                {
+                    for (int s = 0; s < Enum.GetNames(typeof(Suit)).Length; s++) // using the GetNames() method to build an array to get the length of
+                    {
+                        Card card = new Card();
+                        card.Face = (Face)f;
+                        card.Suit = (Suit)s;
+                        Cards.Add(card);
+                    }
+                }
+            }
+            Console.WriteLine("Created a deck of {0} cards.", Cards.Count);
+            
+            //===== SHUFFLE DECK - automatically shuffle deck 4 times when new deck is created
+            Shuffle(times: 4, display: false);
+
+            //===== STRING - UNUSED alternative, construct a deck of cards using strings
+            //string[] Suits = { "Clubs", "Diamonds", "Hearts", "Spades" };
+            //string[] Faces = { "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King", "Ace" };
+            //foreach (string f in Faces)
+            //{
+            //    foreach (string s in Suits)
+            //    {
+            //        Card card = new Card();
+            //        card.Suit = s;
+            //        card.Face = f;
+            //        Cards.Add(card);
+            //    }
+            //} 
+        }
+
+        //========== PROPERTIES
+        Random random = new Random();
+        public List<Card> Cards { get; set; }
+
+        //========== SHUFFLE method - input number of time to shuffle, set the default shuffle times to 1 if not provided
+        public void Shuffle(int times=1, bool display=false)
+        {
+            List<Card> tempList;
+            int rIndex;
+            int sCount = 0;
+            for (int i=0; i < times; i++)
+            {
+                tempList = new List<Card>();
+                while (Cards.Count > 0)
+                {
+                    rIndex = random.Next(0, Cards.Count);
+                    tempList.Add(Cards[rIndex]);
+                    Cards.RemoveAt(rIndex);
+                }
+                Cards = tempList;
+                if (display) { Console.WriteLine("A shuffle complete. Top card in deck is now {0} of {1}", Cards[0].Face, Cards[0].Suit); }
+                sCount++;                
+            }
+            if (display) { Console.WriteLine((sCount == 1) ? "Shuffled 1 time" : String.Format("Shuffled {0} times.", sCount)); }
+        }
+
+        //========== LIST CARDS
+        public void ListCards(string loop="for")
+        {
+            if (loop == "for")
+            {
+                //===== PRINT LIST OF CARDS
+                Console.WriteLine("===== SHOW CARDS - using for loop");
+                for (int i = 0; i < Cards.Count; i++)
+                {
+                    Console.WriteLine(Cards[i].Face + " of " + Cards[i].Suit);
+                }
+            }
+            else
+            {
+                //===== PRINT LIST OF CARDS
+                Console.WriteLine("===== SHOW CARDS - using foreach loop");
+                foreach (Card c in Cards)
+                {
+                    Console.WriteLine(c.Face + " of " + c.Suit);
+                }
+            }          
+        }
+    }
+}
 ```
