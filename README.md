@@ -1,20 +1,24 @@
 # C-Sharp-Large-Projects
 
+## CONTENT
+- [LIVE PROJECT](#live-project)
+- [BLACKJACK DEMO - Console Application](#blackjack-demo)
+
 ## LIVE PROJECT
 I had an opportunity to work on a two-week spring of a large-scale ASP .NET MVC website with 6 other developers. Within a couple days I was able to get up speed on a large existing codebase from multiple prior contributors that was being altered to satisfy future roadmap specifications. During my time on the project I seamlessly merged code that made significant improvements to a large existing web application without comprising legacy functionality. During the two-week project I completed five stories that improved back-end functionality and front-end design while identifying and fixing existing bugs. Even during the short span of time, I was able to connect and collaborate with team members to help accelerate their stories.
 
 ### Description
 This project is built using ASP .Net MVC and Entity Framework. This project is the interactive website for managing the content and productions for a theater/acting company. It's meant to be a content management service (aka CMS) for users who are not technically saavy and want to easily manage what displays in their website. It's also meant to help manage login capability for subscribers, and maintain a wiki of past performances and performers. 
 
-## CONTENT
+## STORIES
 - [Story 1: Align Checkboxes](#story-1-align-checkboxes)
 - [Story 2: Replace static images on home page with carousels](#story-2-replace-static-images-on-home-page-with-carousels)
 - [Story 3: Emulate part details card with part create form](#story-3-emulate-part-details-card-with-part-create-form)
 - [Story 4: Enable photo update during Production creation](#story-4-enable-photo-update-during-production-creation)
 - [Story 5: Add custom validation and fix display bug](#story-5-add-custom-validation-and-fix-display-bug)
-- [BLACKJACK DEMO - Console Application](#blackjack-demo)
 
-## STORIES
+
+## STORY DETAILS
 ### Story 1: Align Checkboxes
 -	Align Checkboxes on CastMember Create Page
 -	Create three responsive columns
@@ -958,6 +962,7 @@ CSHTML:
 I developed a console application to demonstrate OOP programming and logic with C#. This fully functioning demo allows multiple players to play a casino style blackjack rules with a virtual dealer. Multiple decks are created and scaled with the number of players. Player and dealer chip accounting and balances are maintained, betting limits and user errors are accounted for. Casino rules twenty-one logic is used to establish winners and losers. Players can leave or continue and are automatically removed from game when balance reaches zero. Sample code snippets provided below. Fraud logging to database for those trying to bet negative values (intentional) and admin login to display all DB records to demonstrate DB handling. The main program was written in the Blackjack namespace with reference to the Casino namespace.   
 
 ### Select Code Snippets
+- [Main Blackjack program](#program)
 
 #### Program
 ```CS
