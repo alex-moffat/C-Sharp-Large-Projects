@@ -635,6 +635,61 @@ public ActionResult Create([Bind(Include = "PartID,Production,Person,Character,T
 }
 ```
 
+```CSS
+/*========== PART CREATE ==========*/
+
+/*===== CARD - add part create style to Bootstrap base card */
+.card.part-create {
+    background-color: var(--main-bg-color);
+    border-radius: 25px;
+    outline-color: white;
+    min-width: 300px;
+    max-width: 550px;    
+}
+
+/*===== FORM CONTROL - add part create style to Bootstrap base */
+.form-control.part-create {
+    background-color: var(--main-secondary-color);
+    color: white;    
+}
+/*=== center align the value selected in the dropdown list */
+select.form-control.part-create {
+    text-align-last: center; 
+}
+/*=== hide element selectively from jQuery add/remove class method */
+.form-control.part-create.hide {
+    display: none;
+}
+
+/*===== DROPDOWN Placeholder option */
+select.form-control.part-create option[value=""] {
+    color: rgba(255,255,255,.4);
+}
+
+/*=== INPUT Placeholder color */
+.form-control.part-create::-webkit-input-placeholder {
+    color: rgba(255,255,255,.4);
+}
+.form-control.part-create::placeholder {
+    color: rgba(255,255,255,.4);
+}
+.form-control.part-create:-ms-input-placeholder {
+    color: rgba(255,255,255,.4);
+}
+.form-control.part-create:-moz-placeholder {
+    color: rgba(255,255,255,.4);
+}
+.form-control.part-create::-moz-placeholder {
+    color: rgba(255,255,255,.4);
+}
+
+/*===== BUTTON - Submit under card */
+button.part-create {
+    max-width: 500px;
+    width: 90%;
+}
+```
+
 ### Story 4: Enable photo update during Production creation  
 -	Create an input field in the Productions Create page that allows the admin to be able to select a photo from their file system.
 -	When the Create form submits, new Photo and Production Photo records are created
