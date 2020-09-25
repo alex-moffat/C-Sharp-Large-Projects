@@ -635,6 +635,7 @@ public ActionResult Create([Bind(Include = "PartID,Production,Person,Character,T
 }
 ```
 
+#### CSS:
 ```CSS
 /*========== PART CREATE ==========*/
 
@@ -701,6 +702,129 @@ button.part-create {
 -	Add photo validation feedback to user that upload file is not a valid photo and allow new selection before create.
 -	Allow Create production without photo if no upload file is given
 -	Use selected Season after failed validation and current season on new page load 
+
+#### CS:
+```CS
+public ActionResult Create([Bind(Include = "ProductionId,Title,Playwright,Description,Runtime,OpeningDay,ClosingDay,DefaultPhoto,ShowtimeEve,ShowtimeMat,TicketLink,Season,IsCurrent,IsWorldPremiere")] Production production, HttpPostedFileBase uploadFile)
+{
+    //========== VALIDATION
+    //===== PHOTO - Check if photo is not null but not a valid photo format
+    if (uploadFile != null && !PhotoController.ValidatePhoto(uploadFile))
+    {
+        ModelState.AddModelError("DefaultPhoto", "File must be a valid photo format.");
+        ViewData["upload_file"] = uploadFile;
+    }
+    if (ModelState.IsValid)
+    {
+        //========== DEFAULT PHOTO ==========
+        //--- save photo using photo controller, save entry to ProductionPhotos, photoName set to production title, description set to "Default Photo"
+        if (uploadFile != null)
+        {
+            //----- Save New Photo or retrieve existing photo if the same - using photo controller
+            Debug.WriteLine("Saving photo...");
+            int photoId = PhotoController.CreatePhoto(uploadFile, production.Title);
+            //----- Save New ProductionPhoto
+            var productionPhoto = new ProductionPhotos() { PhotoId = photoId, Title = production.Title, Description = "Default Photo" };
+            db.ProductionPhotos.Add(productionPhoto);
+            db.SaveChanges();
+            //----- Save New Production, add DefaultPhoto object reference to production
+            production.DefaultPhoto = productionPhoto;
+            db.Productions.Add(production);
+            db.SaveChanges();
+            //----- Add Production object reference to productionPhoto
+            productionPhoto.Production = production;
+            db.Entry(productionPhoto).State = EntityState.Modified;
+            db.SaveChanges();
+        }
+        //========== NO PHOTO ==========
+        else
+        {
+            db.Productions.Add(production);
+            db.SaveChanges();
+        }
+        return RedirectToAction("Index");
+    }
+    return View(production);
+}
+
+//========== VALIDATE PHOTO - Test if input is photo, return True if a photo format
+public static bool ValidatePhoto(HttpPostedFileBase postedFile)
+{
+    Debug.WriteLine("Validating photo...");
+    const int ImageMinimumBytes = 512;
+    //-------------------------------------------
+    //  Check the image mime types
+    //-------------------------------------------
+    if (!string.Equals(postedFile.ContentType, "image/jpg", StringComparison.OrdinalIgnoreCase) &&
+        !string.Equals(postedFile.ContentType, "image/jpeg", StringComparison.OrdinalIgnoreCase) &&
+        !string.Equals(postedFile.ContentType, "image/pjpeg", StringComparison.OrdinalIgnoreCase) &&
+        !string.Equals(postedFile.ContentType, "image/gif", StringComparison.OrdinalIgnoreCase) &&
+        !string.Equals(postedFile.ContentType, "image/x-png", StringComparison.OrdinalIgnoreCase) &&
+        !string.Equals(postedFile.ContentType, "image/png", StringComparison.OrdinalIgnoreCase))
+    {
+        return false;
+    }
+
+    //-------------------------------------------
+    //  Check the image extension
+    //-------------------------------------------
+    var postedFileExtension = Path.GetExtension(postedFile.FileName);
+    if (!string.Equals(postedFileExtension, ".jpg", StringComparison.OrdinalIgnoreCase)
+        && !string.Equals(postedFileExtension, ".png", StringComparison.OrdinalIgnoreCase)
+        && !string.Equals(postedFileExtension, ".gif", StringComparison.OrdinalIgnoreCase)
+        && !string.Equals(postedFileExtension, ".jpeg", StringComparison.OrdinalIgnoreCase))
+    {
+        return false;
+    }
+
+    //-------------------------------------------
+    //  Attempt to read the file and check the first bytes
+    //-------------------------------------------
+    try
+    {
+        if (!postedFile.InputStream.CanRead)
+        {
+            return false;
+        }
+        //----- Check whether the image size below the lower limit or not
+        if (postedFile.ContentLength < ImageMinimumBytes)
+        {
+            return false;
+        }
+        //----- Read the file
+        byte[] buffer = new byte[ImageMinimumBytes];
+        postedFile.InputStream.Read(buffer, 0, ImageMinimumBytes);
+        string content = System.Text.Encoding.UTF8.GetString(buffer);
+        if (Regex.IsMatch(content, @"<script|<html|<head|<title|<body|<pre|<table|<a\s+href|<img|<plaintext|<cross\-domain\-policy",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Multiline))
+        {
+            return false;
+        }
+    }
+    catch (Exception)
+    {
+        return false;
+    }
+    //-------------------------------------------
+    //  Try to instantiate new Bitmap to see if .NET will throw exception
+    //-------------------------------------------
+    try
+    {
+        using (var bitmap = new Bitmap(postedFile.InputStream))
+        {
+        }
+    }
+    catch (Exception)
+    {
+        return false;
+    }
+    finally
+    {
+        postedFile.InputStream.Position = 0;
+    }
+    return true;
+}
+```
 
 ### Story 5: Add custom validation and fix display bug
 -	Prevent the creation of Productions with null Evening and Matinee showtimes.  
