@@ -965,7 +965,7 @@ I developed a console application to demonstrate OOP programming and logic with 
 - [Main Blackjack program](#program)
 - [Blackjack game logic](#blackjackgame)
 
-#### Program.cs
+#### Program
 ```CS
 namespace Blackjack
 {
@@ -1170,7 +1170,7 @@ namespace Blackjack
 }
 ```
 
-BlackjackGame.cs
+BlackjackGame
 ```CS
 namespace Casino.Blackjack
 {
