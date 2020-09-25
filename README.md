@@ -962,10 +962,10 @@ CSHTML:
 I developed a console application to demonstrate OOP programming and logic with C#. This fully functioning demo allows multiple players to play a casino style blackjack rules with a virtual dealer. Multiple decks are created and scaled with the number of players. Player and dealer chip accounting and balances are maintained, betting limits and user errors are accounted for. Casino rules twenty-one logic is used to establish winners and losers. Players can leave or continue and are automatically removed from game when balance reaches zero. Sample code snippets provided below. Fraud logging to database for those trying to bet negative values (intentional) and admin login to display all DB records to demonstrate DB handling. The main program was written in the Blackjack namespace with reference to the Casino namespace.   
 
 ### Select Code Snippets
-- [Program](#program.cs)
-- [BlackjackGame](#blackjackgame.cs)
+- [Program.cs](#program)
+- [BlackjackGame.cs](#blackjackgame)
 
-#### Program.cs
+#### Program
 ```CS
 namespace Blackjack
 {
@@ -1170,7 +1170,7 @@ namespace Blackjack
 }
 ```
 
-#### BlackjackGame.cs
+#### BlackjackGame
 ```CS
 namespace Casino.Blackjack
 {
