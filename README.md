@@ -964,7 +964,7 @@ I developed a console application to demonstrate OOP programming and logic with 
 ### Select Code Snippets
 - [Program.cs](#program)
 - [BlackjackGame.cs](#blackjackgame)
-- [BlackjackRules.cs](#blackjackrules)
+- [BlackjackRules.cs](#blackjackrules-cs)
 
 #### Program
 ```CS
