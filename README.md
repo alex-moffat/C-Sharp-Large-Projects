@@ -1,4 +1,5 @@
 # C-Sharp-Large-Projects
+Web and console applications that took days to develop rather than hours using C#, .NET, ASP.NET MVC.
 
 ## CONTENT
 - [LIVE PROJECT - ASP.NET MVC](#live-project)
